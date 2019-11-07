@@ -7,32 +7,30 @@ nodes = [] # global nodes array
 finalDistance = 0
 finalSequence = []
 width, height = 1000, 500
-win = GraphWin("Pathfind", width, height) # create window
+win = GraphWin('Pathfind', width, height) # create window
 
 class Node :
-    distance = None  # distance from node to initial node is set to None
-    tentative = None
-    unvisited = True
-    color = 'red'
-
     def __init__(self, name, edges, x, y):
         self.name = name
         self.edges = edges
         self.x = x
         self.y = y
+        self.distance = None  # distance from node to initial node is set to None
+        self.tentative = None
+        self.unvisited = True
+        self.color = 'red'
 
 class Edge :
-    considered = False
-    line = Line(Point(0,0), Point(0,0))
-    color = 'black'
-
     def __init__(self, length, endpoints):
         self.length = length
         self.endpoints = endpoints
+        self.considered = False
+        self.line = Line(Point(0,0), Point(0,0))
+        self.color = 'black'
 
-def initGraph() :
+def initGraph(minNodes, maxNodes) :
     # Dynamic Definition
-    for n in range(randint(12, 13)):
+    for n in range(randint(minNodes,maxNodes)):
         xValues, yValues = [], []
 
         x = randint(width // 5, 4 * width // 5) # x b/w 1/5 and 4/5 of the width
@@ -51,7 +49,7 @@ def initGraph() :
         nodes.append(Node(n, [], x, y)) # new node
 
     for node in nodes :     # for each node
-        numEdges = randint(1, 2)        # select random number of edges between 0 and len nodes
+        numEdges = randint(1, 2)        # select random number of edges
         connected = nodes.copy()         # list of nodes that this node is connecting to
 
         for e in range(numEdges) :       # for each of the random num of edges           
@@ -99,7 +97,6 @@ def findSequence(initial, destination) :
 def dijkstra(initial, destination) :
     unvisited = nodes.copy() # the unvisited set is initially all nodes
     initial.distance = 0     # set initial node's distance to zero
-    initial.color = 'blue'
     current = initial        # set the current node to initial
     sequence = []
     
@@ -127,7 +124,7 @@ def dijkstra(initial, destination) :
                 if node.tentative is not None and node.tentative <= minTentative :  
                     current = node
     
-def display() :
+def display(circleSize) :
     for node in nodes : # draw all edges first
         for edge in node.edges :
             edge.line = Line(Point(edge.endpoints[0].x, edge.endpoints[0].y),Point(edge.endpoints[1].x, edge.endpoints[1].y))
@@ -135,7 +132,7 @@ def display() :
             edge.line.draw(win)
 
     for node in nodes : # draw all circles
-        circle = Circle(Point(node.x, node.y), 10)
+        circle = Circle(Point(node.x, node.y), circleSize)
         circle.setFill(node.color)
         circle.draw(win)
 
@@ -153,7 +150,7 @@ def display() :
     win.getMouse() # Pause to view result
     win.close()
                     
-initGraph()
+initGraph(10, 12) # inputs : min nodes, max nodes
 finalDistance, finalSequence = dijkstra(choice(nodes), choice(nodes))
-display()
+display(15) # inputs: size of circles
 
